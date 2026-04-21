@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}About{% endblock title %}
+
+{% block body %}
+
+<style>
+  body {
+    background: linear-gradient( #00c6ff, #8989ec);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .about-container {
+    max-width: 800px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+
+  .about-img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #0072ff;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-weight: 700;
+    color: #333;
+  }
+
+  .lead {
+    color: #555;
+    margin: 20px 0;
+  }
+
+  .btn-custom {
+    margin: 10px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: 0.3s ease;
+  }
+
+  .btn-linkedin {
+    background-color: #0a66c2;
+    color: white;
+    border: none;
+  }
+
+  .btn-linkedin:hover {
+    background-color: #004182;
+  }
+
+  .btn-more {
+    background-color: #28a745;
+    color: white;
+    border: none;
+  }
+
+  .btn-more:hover {
+    background-color: #1e7e34;
+  }
+</style>
+
+<div class="about-container">
+  <img src="/static/tkb.jpg" alt="Profile Image" class="about-img">
+
+  <h1>Tamilkavibharathi S</h1>
+
+  <p class="lead">
+    Hey, I am Tamil. MSc Computer Science student with strong skills in Python, Django, and SQL,
+    focused on backend development and building scalable web applications.
+    I love coding and aim to become a Python Full Stack Developer.
+  </p>
+
+  <a href="https://www.linkedin.com/in/tamilkavibharathi-s-745878320/"
+     class="btn btn-custom btn-linkedin">LinkedIn</a>
+
+  <a href="#" class="btn btn-custom btn-more">More</a>
+</div>
+
+{% endblock body %}

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotics — Types, Uses & Innovation</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #060810;
+    --steel: #0f1623;
+    --panel: #141c2e;
+    --line: #1e2d4a;
+    --electric: #00d4ff;
+    --electric-dim: rgba(0,212,255,0.12);
+    --volt: #c8ff00;
+    --ghost: rgba(255,255,255,0.06);
+    --text: #cdd6f4;
+    --muted: #6b7a99;
+    --white: #f0f4ff;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    background: var(--void);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── SCANLINE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 60px;
+    height: 64px;
+    background: rgba(6,8,16,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav__brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--electric);
+    text-decoration: none;
+  }
+  .nav__links { display: flex; gap: 40px; list-style: none; }
+  .nav__links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav__links a:hover { color: var(--electric); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero__bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1600&q=85');
+    background-size: cover;
+    background-position: center 30%;
+    filter: brightness(0.35) saturate(0.5);
+    transform: scale(1.05);
+    animation: slow-zoom 20s ease-in-out infinite alternate;
+  }
+  @keyframes slow-zoom {
+    from { transform: scale(1.05); }
+    to   { transform: scale(1.12); }
+  }
+  .hero__grid-overlay {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.25;
+  }
+  .hero__gradient {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to top,
+      var(--void) 0%,
+      transparent 45%
+    ), linear-gradient(
+      to right,
+      var(--void) 0%,
+      transparent 50%
+    );
+  }
+  .hero__content {
+    position: relative; z-index: 2;
+    padding: 0 80px 100px;
+    max-width: 860px;
+  }
+  .hero__label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--electric);
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+  .hero__label::before {
+    content: '';
+    display: block; width: 32px; height: 1px;
+    background: var(--electric);
+  }
+  .hero__title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 12vw, 160px);
+    line-height: 0.9;
+    color: var(--white);
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.35s ease forwards;
+  }
+  .hero__title span { color: var(--electric); }
+  .hero__sub {
+    margin-top: 32px;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: rgba(205,214,244,0.7);
+    max-width: 580px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.5s ease forwards;
+  }
+  .hero__scroll {
+    position: absolute; bottom: 40px; right: 60px; z-index: 2;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    writing-mode: vertical-rl;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero__scroll::after {
+    content: '';
+    display: block; width: 1px; height: 60px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── STAT BAR ── */
+  .stat-bar {
+    background: var(--steel);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .stat-item {
+    padding: 40px 48px;
+    border-right: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-item::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--electric);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+  }
+  .stat-item:hover::before { transform: scaleX(1); }
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--electric);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* ── SECTION BASE ── */
+  section { padding: 120px 80px; }
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::before { content: '//'; opacity: 0.5; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(44px, 6vw, 80px);
+    color: var(--white);
+    line-height: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+  .section-body {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.85;
+    color: rgba(205,214,244,0.7);
+    max-width: 680px;
+  }
+
+  /* ── OVERVIEW ── */
+  .overview { background: var(--void); }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 64px;
+  }
+  .overview-image {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .overview-image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: saturate(0.6);
+    transition: filter 0.5s, transform 0.6s;
+  }
+  .overview-image:hover img { filter: saturate(1); transform: scale(1.04); }
+  .overview-image__badge {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(6,8,16,0.9) 0%, transparent 100%);
+    padding: 32px 24px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--electric);
+  }
+  .traits { display: flex; flex-direction: column; gap: 0; }
+  .trait {
+    display: flex; gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .trait:first-child { border-top: 1px solid var(--line); }
+  .trait__num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--line);
+    line-height: 1;
+    width: 48px;
+    flex-shrink: 0;
+  }
+  .trait__body h4 {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .trait__body p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* ── TYPES ── */
+  .types { background: var(--steel); padding: 120px 0; }
+  .types__header { padding: 0 80px 64px; }
+  .types-scroll {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .type-card {
+    position: relative;
+    overflow: hidden;
+    border-right: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .type-card:last-child { border-right: none; }
+  .type-card__img {
+    width: 100%; aspect-ratio: 9/13;
+    object-fit: cover;
+    filter: saturate(0.3) brightness(0.6);
+    transition: filter 0.4s, transform 0.5s;
+    display: block;
+  }
+  .type-card:hover .type-card__img {
+    filter: saturate(0.8) brightness(0.8);
+    transform: scale(1.06);
+  }
+  .type-card__overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(6,8,16,0.95) 0%, transparent 55%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 28px 24px;
+  }
+  .type-card__tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 8px;
+  }
+  .type-card__name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--white);
+    letter-spacing: 1px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .type-card__desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(205,214,244,0.55);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .type-card:hover .type-card__desc { max-height: 120px; }
+
+  /* ── USES ── */
+  .uses { background: var(--void); }
+  .uses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    margin-top: 64px;
+    border: 1px solid var(--line);
+  }
+  .use-card {
+    background: var(--void);
+    padding: 48px 40px;
+    position: relative;
+    transition: background 0.3s;
+    overflow: hidden;
+  }
+  .use-card:hover { background: var(--panel); }
+  .use-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--electric);
+    transform: scaleY(0);
+    transition: transform 0.35s ease;
+    transform-origin: top;
+  }
+  .use-card:hover::after { transform: scaleY(1); }
+  .use-card__icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .use-card__title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--white);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+  .use-card__body {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .use-card__image {
+    width: 100%; aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 32px;
+    filter: saturate(0.5) brightness(0.7);
+    transition: filter 0.4s;
+  }
+  .use-card:hover .use-card__image { filter: saturate(0.9) brightness(0.85); }
+
+  /* ── FEATURED ARTICLE ── */
+  .featured-strip {
+    background: var(--volt);
+    padding: 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .featured-strip__text .eyebrow { color: var(--void); opacity: 0.6; }
+  .featured-strip__text .eyebrow::before { color: var(--void); }
+  .featured-strip__title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 68px);
+    color: var(--void);
+    line-height: 0.95;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .featured-strip__body {
+    font-size: 18px;
+    line-height: 1.75;
+    color: rgba(6,8,16,0.7);
+    margin-bottom: 32px;
+  }
+  .featured-strip__btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--void);
+    color: var(--volt);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 16px 28px;
+    text-decoration: none;
+    transition: background 0.3s;
+  }
+  .featured-strip__btn:hover { background: var(--steel); }
+  .featured-strip__image {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border: 4px solid var(--void);
+  }
+  .featured-strip__image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .featured-strip__image:hover img { transform: scale(1.05); }
+
+  /* ── ARTICLES GRID ── */
+  .articles { background: var(--steel); }
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 64px;
+  }
+  .article-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+  }
+  .article-card:hover {
+    border-color: var(--electric);
+    transform: translateY(-4px);
+  }
+  .article-card__img {
+    width: 100%; aspect-ratio: 16/9;
+    object-fit: cover;
+    filter: saturate(0.5);
+    transition: filter 0.4s, transform 0.4s;
+  }
+  .article-card:hover .article-card__img { filter: saturate(1); transform: scale(1.04); }
+  .article-card__body { padding: 28px 24px; }
+  .article-card__tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--electric);
+    margin-bottom: 10px;
+  }
+  .article-card__title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  /* ── APPLICATIONS LIST ── */
+  .applications { background: var(--void); }
+  .apps-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 64px;
+  }
+  .apps-list { display: flex; flex-direction: column; }
+  .app-item {
+    display: flex; align-items: center; gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 17px;
+    color: rgba(205,214,244,0.7);
+    transition: color 0.2s;
+    cursor: default;
+  }
+  .app-item:hover { color: var(--white); }
+  .app-item::before {
+    content: '→';
+    font-family: 'Space Mono', monospace;
+    color: var(--electric);
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+  .app-item:hover::before { opacity: 1; }
+  .apps-image-stack {
+    position: sticky; top: 100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .apps-image-stack img {
+    width: 100%; aspect-ratio: 1;
+    object-fit: cover;
+    filter: saturate(0.4) brightness(0.7);
+    border: 1px solid var(--line);
+    transition: filter 0.4s;
+  }
+  .apps-image-stack img:hover { filter: saturate(1) brightness(0.9); }
+  .apps-image-stack img:first-child {
+    grid-column: 1 / -1;
+    aspect-ratio: 2/1;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--steel);
+    border-top: 1px solid var(--line);
+    padding: 64px 80px;
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 60px;
+    align-items: start;
+  }
+  .footer__brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--electric);
+  }
+  .footer__brand p {
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 8px;
+    letter-spacing: 0;
+  }
+  .footer__col h5 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+  .footer__col a {
+    display: block;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+  }
+  .footer__col a:hover { color: var(--electric); }
+  .footer__bottom {
+    border-top: 1px solid var(--line);
+    padding: 24px 80px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--steel);
+  }
+  .footer__bottom p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1000px) {
+    nav { padding: 0 28px; }
+    .nav__links { display: none; }
+    .hero__content { padding: 0 28px 80px; }
+    section { padding: 80px 28px; }
+    .stat-bar { grid-template-columns: 1fr 1fr; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--line); }
+    .stat-item:nth-child(odd) { border-right: 1px solid var(--line); }
+    .overview-grid { grid-template-columns: 1fr; gap: 40px; }
+    .types-scroll { grid-template-columns: 1fr 1fr; }
+    .type-card { border-bottom: 1px solid var(--line); }
+    .uses-grid { grid-template-columns: 1fr; }
+    .featured-strip { grid-template-columns: 1fr; gap: 40px; padding: 60px 28px; }
+    .articles-grid { grid-template-columns: 1fr; }
+    .apps-layout { grid-template-columns: 1fr; }
+    .apps-image-stack { position: static; }
+    footer { grid-template-columns: 1fr 1fr; padding: 48px 28px; gap: 40px; }
+    .footer__bottom { padding: 20px 28px; }
+    .types__header { padding: 0 28px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav__brand" href="#">ROBO<span style="color:var(--volt)">.</span>HUB</a>
+  <ul class="nav__links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#types">Types</a></li>
+    <li><a href="#uses">Uses</a></li>
+    <li><a href="#applications">Applications</a></li>
+    <li><a href="#articles">Stories</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__grid-overlay"></div>
+  <div class="hero__gradient"></div>
+  <div class="hero__content">
+    <p class="hero__label">Science · Engineering · Technology</p>
+    <h1 class="hero__title">ROBO<span>TICS</span></h1>
+    <p class="hero__sub">An interdisciplinary sector dedicated to designing, building and deploying machines that substitute for — or surpass — human capabilities.</p>
+  </div>
+  <div class="hero__scroll">Scroll down</div>
+</div>
+
+<!-- STAT BAR -->
+<div class="stat-bar">
+  <div class="stat-item">
+    <div class="stat-number">3M+</div>
+    <div class="stat-label">Industrial Robots in Use</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">90%</div>
+    <div class="stat-label">Were in Auto Plants (2005)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">0.2mm</div>
+    <div class="stat-label">Smallest Robot (RoboBee)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">200m</div>
+    <div class="stat-label">Largest Robot (Vindskip)</div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section class="overview" id="overview">
+  <p class="eyebrow">01 — What Is Robotics</p>
+  <h2 class="section-title">THE INTERSECTION<br>OF SCIENCE &<br>ENGINEERING</h2>
+  <div class="overview-grid">
+    <div>
+      <p class="section-body">Robotics is where science, engineering and technology converge to produce machines that substitute for — or replicate — human actions. From R2-D2 to Boston Dynamics' Atlas, the field has expanded far beyond imagination.</p>
+      <br>
+      <p class="section-body">In 2005, 90% of all robots assembled cars. Today, they explore Earth's harshest conditions, assist law enforcement, and operate in nearly every facet of healthcare.</p>
+      <br>
+      <div class="traits">
+        <div class="trait">
+          <div class="trait__num">01</div>
+          <div class="trait__body">
+            <h4>Mechanical Construction</h4>
+            <p>Every robot has a physical form designed for its specific environment — from titanium Mars rover wheels to micro-scale surgical instruments.</p>
+          </div>
+        </div>
+        <div class="trait">
+          <div class="trait__num">02</div>
+          <div class="trait__body">
+            <h4>Electrical Components</h4>
+            <p>An electric current powers the machinery — batteries, capacitors, or external power supplies enabling motion and computation.</p>
+          </div>
+        </div>
+        <div class="trait">
+          <div class="trait__num">03</div>
+          <div class="trait__body">
+            <h4>Computer Programming</h4>
+            <p>Code transforms metal into intelligence — telling the robot when, how, and why to carry out its assigned task.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="overview-image">
+      <img src="https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?w=800&q=80" alt="Industrial Robot Arm">
+      <div class="overview-image__badge">Industrial Robotics · Factory Floor</div>
+    </div>
+  </div>
+</section>
+
+<!-- TYPES -->
+<section class="types" id="types">
+  <div class="types__header">
+    <p class="eyebrow">02 — Classification</p>
+    <h2 class="section-title">FIVE TYPES<br>OF ROBOTS</h2>
+  </div>
+  <div class="types-scroll">
+    <div class="type-card">
+      <img class="type-card__img" src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&q=80" alt="Pre-Programmed Robot">
+      <div class="type-card__overlay">
+        <p class="type-card__tag">Type 01</p>
+        <h3 class="type-card__name">Pre-Programmed</h3>
+        <p class="type-card__desc">Operate in controlled environments performing simple, monotonous tasks — like welding a car door on an assembly line faster than any human.</p>
+      </div>
+    </div>
+    <div class="type-card">
+      <img class="type-card__img" src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=500&q=80" alt="Humanoid Robot">
+      <div class="type-card__overlay">
+        <p class="type-card__tag">Type 02</p>
+        <h3 class="type-card__name">Humanoid</h3>
+        <p class="type-card__desc">Mimic human behavior — running, jumping, carrying objects. Examples include Sophia by Hanson Robotics and Boston Dynamics' Atlas.</p>
+      </div>
+    </div>
+    <div class="type-card">
+      <img class="type-card__img" src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=500&q=80" alt="Autonomous Robot">
+      <div class="type-card__overlay">
+        <p class="type-card__tag">Type 03</p>
+        <h3 class="type-card__name">Autonomous</h3>
+        <p class="type-card__desc">Operate independently in open environments without human supervision — like the Roomba vacuum navigating your home via sensors.</p>
+      </div>
+    </div>
+    <div class="type-card">
+      <img class="type-card__img" src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=500&q=80" alt="Teleoperated Robot">
+      <div class="type-card__overlay">
+        <p class="type-card__tag">Type 04</p>
+        <h3 class="type-card__name">Teleoperated</h3>
+        <p class="type-card__desc">Human-controlled bots for extreme conditions — from deep-sea pipe repair to landmine-detecting drones on active battlefields.</p>
+      </div>
+    </div>
+    <div class="type-card">
+      <img class="type-card__img" src="https://images.unsplash.com/photo-1576671081837-49000212a370?w=500&q=80" alt="Augmenting Robot">
+      <div class="type-card__overlay">
+        <p class="type-card__tag">Type 05</p>
+        <h3 class="type-card__name">Augmenting</h3>
+        <p class="type-card__desc">Enhance or restore human capabilities — robotic prosthetic limbs, exoskeletons for heavy lifting, and surgical precision tools.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USES -->
+<section class="uses" id="uses">
+  <p class="eyebrow">03 — Industry Use</p>
+  <h2 class="section-title">WHERE ROBOTS<br>WORK TODAY</h2>
+  <div class="uses-grid">
+    <div class="use-card">
+      <img class="use-card__image" src="https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&q=80" alt="Manufacturing">
+      <span class="use-card__icon">⚙️</span>
+      <h3 class="use-card__title">Manufacturing</h3>
+      <p class="use-card__body">The oldest adopter of robotics. Co-bots work alongside humans to test and assemble cars, electronics, and industrial equipment — with over 3 million units active globally.</p>
+    </div>
+    <div class="use-card">
+      <img class="use-card__image" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&q=80" alt="Logistics">
+      <span class="use-card__icon">📦</span>
+      <h3 class="use-card__title">Logistics</h3>
+      <p class="use-card__body">Robots pick, pack and ship your orders. Last-mile delivery bots now bring packages directly to your door, while warehouse robots cut fulfillment time to minutes.</p>
+    </div>
+    <div class="use-card">
+      <img class="use-card__image" src="https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600&q=80" alt="Healthcare">
+      <span class="use-card__icon">🏥</span>
+      <h3 class="use-card__title">Healthcare</h3>
+      <p class="use-card__body">From robot-assisted surgery to autonomous hospital delivery bots like TUG, and Toyota's rehab assistants that help patients learn to walk again.</p>
+    </div>
+    <div class="use-card">
+      <img class="use-card__image" src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&q=80" alt="Travel">
+      <span class="use-card__icon">🚗</span>
+      <h3 class="use-card__title">Travel</h3>
+      <p class="use-card__body">Self-driving vehicles from Tesla, Waymo and Ford are redefining transportation. Uber and Lyft are building autonomous fleets — no human driver required.</p>
+    </div>
+    <div class="use-card">
+      <img class="use-card__image" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Home">
+      <span class="use-card__icon">🏠</span>
+      <h3 class="use-card__title">Home</h3>
+      <p class="use-card__body">Robots vacuum your floors, mow your lawn, clean your pool, and entertain your kids. Science fiction arrived quietly through the front door.</p>
+    </div>
+    <div class="use-card">
+      <img class="use-card__image" src="https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=600&q=80" alt="Agriculture">
+      <span class="use-card__icon">🌾</span>
+      <h3 class="use-card__title">Agriculture</h3>
+      <p class="use-card__body">Harvesting robots, drone-based crop monitoring, and autonomous tractors are powering the farmtech revolution — growing more with less.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<div class="featured-strip">
+  <div class="featured-strip__text">
+    <p class="eyebrow">Featured</p>
+    <h2 class="featured-strip__title">26 COMPANIES ON THE FOREFRONT OF INNOVATION</h2>
+    <p class="featured-strip__body">Across America, the co-mingling of engineering and science at top robotics companies is producing truly groundbreaking products — from collaborative warehouse bots to surgical precision systems.</p>
+    <a href="#articles" class="featured-strip__btn">Read More Stories →</a>
+  </div>
+  <div class="featured-strip__image">
+    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80" alt="Robotics Innovation">
+  </div>
+</div>
+
+<!-- APPLICATIONS -->
+<section class="applications" id="applications">
+  <p class="eyebrow">04 — Use Cases</p>
+  <h2 class="section-title">APPLICATIONS<br>OF ROBOTICS</h2>
+  <div class="apps-layout">
+    <div class="apps-list">
+      <div class="app-item">Helping fight forest fires</div>
+      <div class="app-item">Working alongside humans in manufacturing (co-bots)</div>
+      <div class="app-item">Providing companionship to elderly individuals</div>
+      <div class="app-item">Surgical assistants in operating rooms</div>
+      <div class="app-item">Last-mile package and food order delivery</div>
+      <div class="app-item">Autonomous vacuum and lawn-mowing robots</div>
+      <div class="app-item">Item retrieval in fulfillment warehouses</div>
+      <div class="app-item">Search-and-rescue after natural disasters</div>
+      <div class="app-item">Landmine detection in war zones</div>
+      <div class="app-item">Underwater pipeline inspection and repair</div>
+      <div class="app-item">Agricultural harvesting and crop monitoring</div>
+      <div class="app-item">Mapping & conservation via aerial drones</div>
+    </div>
+    <div class="apps-image-stack">
+      <img src="https://images.unsplash.com/photo-1527430253228-e93688616381?w=700&q=80" alt="Drone">
+      <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&q=80" alt="Robot">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" alt="Circuit">
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLES -->
+<section class="articles" id="articles">
+  <p class="eyebrow">05 — More Stories</p>
+  <h2 class="section-title">LATEST IN<br>ROBOTICS</h2>
+  <div class="articles-grid">
+    <div class="article-card">
+      <img class="article-card__img" src="https://images.unsplash.com/photo-1607827448299-a099b845f076?w=600&q=80" alt="Dog Training Robot">
+      <div class="article-card__body">
+        <p class="article-card__tag">Machine Learning</p>
+        <p class="article-card__title">How Companion Uses TensorFlow to Build a Robotic Pet Trainer</p>
+      </div>
+    </div>
+    <div class="article-card">
+      <img class="article-card__img" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&q=80" alt="Grocery Robotics">
+      <div class="article-card__body">
+        <p class="article-card__tag">E-Commerce</p>
+        <p class="article-card__title">Online Grocery Orders Could Be a Robotics Gold Rush</p>
+      </div>
+    </div>
+    <div class="article-card">
+      <img class="article-card__img" src="https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=600&q=80" alt="Agriculture Robots">
+      <div class="article-card__body">
+        <p class="article-card__tag">Agriculture</p>
+        <p class="article-card__title">How Root AI's Agricultural Robots Are Powering the Farmtech Revolution</p>
+      </div>
+    </div>
+    <div class="article-card">
+      <img class="article-card__img" src="https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=600&q=80" alt="Healthcare Robotics">
+      <div class="article-card__body">
+        <p class="article-card__tag">Healthcare</p>
+        <p class="article-card__title">10 Examples of Robotics in Healthcare</p>
+      </div>
+    </div>
+    <div class="article-card">
+      <img class="article-card__img" src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&q=80" alt="Drones">
+      <div class="article-card__body">
+        <p class="article-card__tag">Drones</p>
+        <p class="article-card__title">Landmine-Detecting Drones Could Help Save Lives</p>
+      </div>
+    </div>
+    <div class="article-card">
+      <img class="article-card__img" src="https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?w=600&q=80" alt="Future of Robots">
+      <div class="article-card__body">
+        <p class="article-card__tag">Future</p>
+        <p class="article-card__title">The Future of Robots and Robotics</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer__brand">
+    ROBO<span style="color:var(--volt)">.</span>HUB
+    <p>Robotics intelligence for engineers, builders and the curious.</p>
+  </div>
+  <div class="footer__col">
+    <h5>Explore</h5>
+    <a href="#overview">Overview</a>
+    <a href="#types">Types of Robots</a>
+    <a href="#uses">Industry Uses</a>
+    <a href="#applications">Applications</a>
+  </div>
+  <div class="footer__col">
+    <h5>Sectors</h5>
+    <a href="#">Manufacturing</a>
+    <a href="#">Healthcare</a>
+    <a href="#">Agriculture</a>
+    <a href="#">Logistics</a>
+  </div>
+  <div class="footer__col">
+    <h5>Connect</h5>
+    <a href="#">Twitter</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Newsletter</a>
+  </div>
+</footer>
+<div class="footer__bottom">
+  <p>© 2026 ROBO.HUB — All Rights Reserved</p>
+  <p>Built with curiosity &amp; code</p>
+</div>
+
+<script>
+  // Intersection observer for reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.style.opacity = '1';
+        el.target.style.transform = 'translateY(0)';
+        observer.unobserve(el.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  const items = document.querySelectorAll(
+    '.stat-item, .trait, .type-card, .use-card, .app-item, .article-card'
+  );
+  items.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(28px)';
+    el.style.transition = `opacity 0.65s ${i * 0.07}s ease, transform 0.65s ${i * 0.07}s ease`;
+    observer.observe(el);
+  });
+
+  // Smooth nav scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
+</body>
+</html>
