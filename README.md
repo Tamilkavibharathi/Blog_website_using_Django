@@ -88,7 +88,7 @@ Contributions are welcome! Feel free to fork this repo, open issues, or submit p
 
 ## 📄 License
 
-This project is open-source and available under the MIT License.
+This project is open-source.
 
 ---
 
