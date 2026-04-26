@@ -88,7 +88,7 @@ Contributions are welcome! Feel free to fork this repo, open issues, or submit p
 
 ## 📄 License
 
-This project is open-source.
+This project is open-source and available for anyone to use, modify, and distribute under the terms of its license.
 
 ---
 
