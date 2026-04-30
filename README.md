@@ -20,7 +20,7 @@ This blog website allows users to read, create, and manage posts with ease. It i
 
 * Python
 * Django
-* HTML, CSS
+* HTML, CSS and JavaScript 
 * SQLite (default database)
 
 ## 📂 Project Structure
